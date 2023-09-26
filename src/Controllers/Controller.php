@@ -29,6 +29,9 @@ class Controller
     public function selectUser($user_id) {
         return $this->model->selectUser($user_id);
     }
+    public function selectUsers() {
+        return $this->model->selectUsers();
+    }
 
     public function insertUser($name, $email) {  
         return $this->model->insertUser($name, $email);
@@ -51,6 +54,10 @@ class Controller
     {
         return $this->model->selectPost($post_id);
     }
+    public function selectPosts() {
+        return $this->model->selectPosts();
+    }
+
     public function deletePost($post_id) {
         return $this->model->deletePost($post_id);
     }
@@ -61,7 +68,9 @@ $controller = new Controller($model);
 $controller->fetchUsersAndInsertFromApi();
 $controller->fetchPostsAndInsertFromApi();
 
-// // Insert a new user
+ // Insert a new user
+echo "Are you in charge of the damage? O.0 <br>";
+
 // $newUserId = $controller->insertUser("Hen2 haviv","Hen2@karina.biz");
 // echo "Inserted user : " . $newUserId . "<br>";
 // if ($newUserId === "User inserted successfully") {
@@ -71,19 +80,23 @@ $controller->fetchPostsAndInsertFromApi();
 // } else {
 //     echo "An error occurred while adding the user.";
 // }
-
+// echo "is it the end?????????";
 
 //selectUserFromExsitingUsers
-$selectedUser = $controller->selectUser(9);
-echo "Selected user: " . json_encode($selectedUser) . "<br>";
+// $selectedUser = $controller->selectUser(9);
+// echo "Selected user: " . json_encode($selectedUser) . "<br>";
 
+// $selected_users = $controller->selectUsers();
+// foreach ($selected_users as $user) {
+//     echo "ID: {$user['id']}, name: {$user['name']}, email: {$user['email']} <br>";
+// }
 // Update the user's information
-$updateResult = $controller->updateUser(10,"janne_doe", "jane@example.com");
-echo 'res =' . $updateResult . "<br>". "Update result: " . ($updateResult ? "Success" : "Failed") . "<br>";
+// $updateResult = $controller->updateUser(10,"janne_doe", "jane@example.com");
+// echo 'res =' . $updateResult . "<br>". "Update result: " . ($updateResult ? "Success" : "Failed") . "<br>";
 
-// // Delete a user by ID
-$deleteResult = $controller->deleteUser(10);
-echo "Delete result: " . ($deleteResult ? "Success" : "Failed") . "<br>";
+// // // Delete a user by ID
+// $deleteResult = $controller->deleteUser(10);
+// echo "Delete result: " . ($deleteResult ? "Success" : "Failed") . "<br>";
 
 ######################E###################--------------POSTS--------------######################################3
 
@@ -93,16 +106,16 @@ echo "Delete result: " . ($deleteResult ? "Success" : "Failed") . "<br>";
 // echo "Inserted post ID: " . $newPost . "<br>";
 
 
-$selectedPost = $controller->selectPost(1);
-echo "Selected post is: " . json_encode($selectedPost) . "<br>";
+// $selectedPost = $controller->selectPost(1);
+// echo "Selected post is: " . json_encode($selectedPost) . "<br>";
 
-$deletedPostResult = $controller->deletePost(98);
-echo "Delete result: " . ($deletedPostResult ? "Success" : "Failed") ."<br>";
+// $deletedPostResult = $controller->deletePost(98);
+// echo "Delete result: " . ($deletedPostResult ? "Success" : "Failed") ."<br>";
 
 // SELECT posts
-// $posts = $userdatabase->selectPosts();
+// $posts = $controller->selectPosts();
 // foreach ($posts as $post) {
-//     echo "ID: {$post['id']}, Title: {$post['title']}, content: {$post['content']}, createdDay: {$post['createdDay']} ,available: {$post['available']}, user_id: {$post['user_id']}<br>";
+//     echo "ID: {$post['id']}, Title: {$post['title']}, Body: {$post['body']} <br>";
 // }
 
 // Update the post's information

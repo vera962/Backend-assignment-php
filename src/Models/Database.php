@@ -29,9 +29,23 @@ class Database{
         return $user;
     }
 
+    public function selectUsers() {
+        $users = array();
+        
+        // Query to fetch users from the database
+        $query = 'SELECT * FROM users';
+        $result = $this->db_conn->query($query);
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $users[] = $row;
+            }
+        }     
+        return $users;
+    }
 
     public function insertUserId($id, $name, $email) {
-        // Check if the user already exists based on id
+        // Check if the user already exists based on email
         $check_query = "SELECT email FROM users WHERE email = ?";
         $check_stmt = $this->db_conn->prepare($check_query);
         $check_stmt->bind_param("s", $email);
@@ -41,7 +55,7 @@ class Database{
         // If a user with the same id exists, return a message or error code
         if ($check_stmt->num_rows > 0) {
             $check_stmt->close();
-          //  return "User already exists"; // You can return an error message or code here
+            return "User already exists"; // You can return an error message or code here
         }
         //$check_stmt->close();
         // Insert the user if they don't exist
@@ -59,18 +73,9 @@ class Database{
         }
     }
     public function insertUser($name, $email) {
-        $this->insertUserId(NULL, $name, $email);
+        return $this->insertUserId(NULL, $name, $email);
     }
 
-
-    // public function deleteUser($user_id) {
-    //     $query = "DELETE FROM users WHERE id = ?";
-    //     $stmt = $this->db_conn->prepare($query);
-    //     $stmt->bind_param("i", $user_id);
-    //     $stmt->execute();
-    //     $stmt->close();
-    //     return $this->db_conn->affected_rows;
-    // }
     public function deleteUser($user_id) {
 
     // First, delete user's posts

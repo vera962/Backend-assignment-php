@@ -1,4 +1,6 @@
 <?php error_reporting (E_ALL ^ E_NOTICE);
+require_once('../../resources/image.php');
+
 class Database{
 
     //initialization and connection of the database
@@ -55,11 +57,11 @@ class Database{
         // If a user with the same id exists, return a message or error code
         if ($check_stmt->num_rows > 0) {
             $check_stmt->close();
-            return "User already exists"; // You can return an error message or code here
+            return "User already exists"; 
         }
-        //$check_stmt->close();
+      
         // Insert the user if they don't exist
-        $insert_query = "INSERT INTO users (id, name, email) VALUES (?, ?, ?)";
+        $insert_query = "INSERT INTO users (id, name, email) VALUES (?,?, ?)";
         $stmt = $this->db_conn->prepare($insert_query);
         $stmt->bind_param("iss",$id, $name, $email);
         $stmt->execute();
@@ -152,27 +154,32 @@ class Database{
         // If a row with the same name exists, skip insertion
         if ($check_stmt->num_rows > 0) {
             $check_stmt->close();
-           // echo "Id '$id' already exists. Skipping insertion.<br>";
+         //   echo "Id '$id' already exists. Skipping insertion.<br>";
+            return false;
         } else {
             // Insert the data if the name doesn't exist
             $insert_query = "INSERT INTO posts (id, title, body, userId) VALUES (?, ?, ?, ?)";
             $stmt = $this->db_conn->prepare($insert_query);
             if (!$stmt) {
-                die('Prepare statement failed: ' . $this->db_conn->error);
+               echo "Prepare statement failed";
+               return false;
             }
             $stmt->bind_param("issi", $id, $title, $body, $user_id);
             echo "userID is ", $user_id;
-            if (!$stmt->execute()) {
-                die('Failed to insert data: ' . $stmt->error);
-            }
+             if (!$stmt->execute()) {
+                //echo "Failed insert data";
+                return false;
+             }
             $stmt->close();
+            return true;
+            
+
         }
-        //$check_stmt->close();
     }
 
 
     public function insertPost($title, $body, $user_id) {
-            $this->insertPostId(NULL, $title, $body, $user_id);
+            return $this->insertPostId(NULL, $title, $body, $user_id);
     }
         
     public function updatePost($id, $title, $content, $available) {
@@ -186,7 +193,30 @@ class Database{
         $query = "DELETE FROM posts WHERE id = ?";
         $stmt = $this->db_conn->prepare($query);
         $stmt->bind_param("i", $id);
-        return $stmt->execute();
+        $res=$stmt->execute();
+        $stmt->close();
+        return $res;
+    }
+
+
+    public function selectUsersAndTheirPosts(){
+       $query=" SELECT users.*, posts.*, users.image_id 
+        FROM users
+        INNER JOIN posts ON users.id = posts.userId";
+       
+       $result =$this->db_conn->query($query);
+
+        if(!$result) {
+            die("Query failed: " . $stmt->error);
+        }
+        $data =[];
+        while($row =$result->fetch_assoc()) {
+            $row['image_path'] = 'image.jpg/' . $row['image_id'] . '.jpg'; 
+            $data[] = $row;
+        }
+        //$stmt->close();
+        return $data;
+
     }
     
     // fetching user data from the url of Fake Rest Api
@@ -198,9 +228,10 @@ class Database{
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
     
-        if ($response === false) {
-            die('Failed to fetch data from the API: ' . curl_error($ch));
-        }
+        // if ($response === false) {
+        //     // die('Failed to fetch data from the API: ' . curl_error($ch));
+        //     echo "failed to fetch users";
+        // }
         curl_close($ch);
         $data = json_decode($response, true); // Assuming the API returns JSON data
         foreach ($data as $item) {
@@ -221,9 +252,6 @@ class Database{
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
     
-        if ($response === false) {
-            die('Failed to fetch data from the API: ' . curl_error($ch));
-        }
         curl_close($ch);
         $data = json_decode($response, true); // Assuming the API returns JSON data
         foreach ($data as $item) {

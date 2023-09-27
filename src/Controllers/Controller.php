@@ -1,5 +1,6 @@
 <?php
 require_once('../Models/Database.php');
+require_once('../../resources/image.php');
 
 class Controller 
 {
@@ -61,16 +62,20 @@ class Controller
     public function deletePost($post_id) {
         return $this->model->deletePost($post_id);
     }
-}
 
-$model = new Database();
-$controller = new Controller($model);
-$controller->fetchUsersAndInsertFromApi();
-$controller->fetchPostsAndInsertFromApi();
+    public function selectUsersAndTheirPosts(){
+        return $this->model->selectUsersAndTheirPosts();
+    }
+}
+// $model = new Database();
+//  // Initialize the Controler
+//  $controller = new Controller($model);
+// $controller->fetchUsersAndInsertFromApi();
+// $controller->fetchPostsAndInsertFromApi();
+//$image = new Image();
+//$image_url=$image->fetchingImage();
 
  // Insert a new user
-echo "Are you in charge of the damage? O.0 <br>";
-
 // $newUserId = $controller->insertUser("Hen2 haviv","Hen2@karina.biz");
 // echo "Inserted user : " . $newUserId . "<br>";
 // if ($newUserId === "User inserted successfully") {
@@ -81,6 +86,12 @@ echo "Are you in charge of the damage? O.0 <br>";
 //     echo "An error occurred while adding the user.";
 // }
 // echo "is it the end?????????";
+
+// $selected_users = $controller->selectUsersAndTheirPosts();
+// foreach ($selected_users as $user) {
+//     echo "ID: {$user['id']}, name: {$user['name']}, email: {$user['email']}, available: {$user['available']}, image: {$user['image_id']} <br>";
+//     echo '<img src="../../resources/image.jpg" alt="Girl in a jacket">';
+// }
 
 //selectUserFromExsitingUsers
 // $selectedUser = $controller->selectUser(9);
@@ -122,4 +133,4 @@ echo "Are you in charge of the damage? O.0 <br>";
 // $updateResult = $userdatabase->updatePost(1, "just breath", "Stay with me, lets just breath", "YES");
 // echo 'res =' . $updateResult . "<br>". "Updated Post result: " . ($updateResult ? "Success" : "Failed") . "<br>";
 
-$controller->closeDatabaseConnection();
+//$controller->closeDatabaseConnection();

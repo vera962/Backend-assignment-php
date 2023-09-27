@@ -1,27 +1,28 @@
 <!-- index.php -->
+<?php
+ include('../Controllers/controller.php');
+ require_once('../Models/Database.php');
+ $model = new Database();
+ // Initialize the Controler
+ $controller = new Controller($model);
+?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>User Management</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
     <h1>User Management</h1>
-
+    <div class="container">
     <form method="POST">
-        <label for="data_option">Select an option For User:</label>
+        <label for="data_option"></label>
         <select name="data_option" id="data_option">
         <optgroup label="Users Options">
             <option value="selectAllUsers">Select All Users</option>
             <option value="selectUserById">Select User by id</option>
             <option value="deleteUserById"> Delete User By Id</option>
-        </optgroup>
-        <optgroup label="Posts Options">
-            <option value="selectAllPosts">Select All Posts</option>
-            <option value="selectPostById">Select Post By Id</option>
-            <option value="insertPost">Insert Post By id</option>
-            <option value="updatePost"> update Post</option>
-            <option value="deletePostById"> Delete Post By Id</option>
         </optgroup>
         </select>
         <br>
@@ -32,7 +33,7 @@
         <br>
         <br>
         <form method="POST">
-        <label for="data_option">insert User:</label>
+        <label for="data_option"></label>
         <select name="data_option" id="data_option">
             <option value="insertUser">Insert User</option>
             <!-- <option value="updateUser">Update User</option> -->
@@ -46,7 +47,7 @@
     <br>
     <br>
     <form method="POST">
-        <label for="data_option">Update User:</label>
+        <label for="data_option"></label>
         <select name="data_option" id="data_option">
             <option value="updateUser">Update User</option>
         </select>
@@ -58,62 +59,73 @@
 
         <input type="submit" value="Submit User">
     </form>
+    <br>
+    <br>
+    <form method="POST">
+        <label for="data_option"></label>
+        <select name="data_option" id="data_option">
+
+        <optgroup label="Posts Options">
+            <option value="selectAllPosts">Select All Posts</option>
+            <option value="selectPostById">Select Post By Id</option>
+            <option value="deletePostById"> Delete Post By Id</option>
+        </optgroup>
+        </select>
+        <br>
+        <input type="text" name="option_id" placeholder="Enter ID">
+        <input type="submit" value="Submit">
+        </form>
+
+        <br>
+        <br>
+        <form method="POST">
+        <label for="data_option"></label>
+        <select name="data_option" id="data_option">
+            <option value="insertPost">Insert Post</option>
+            <!-- <option value="updateUser">Update User</option> -->
+        </select>
+        <br>
+        <input type="text" name="userId" placeholder="Enter userId">
+        <input type="text" name="title" placeholder="Enter title">
+        <input type="text" name="body" placeholder="Enter body">
+
+        <input type="submit" value="Submit Post">
+    </form>
+    <br>
+    <br>
+        <form method="POST">
+        <label for="data_option"></label>
+        <select name="data_option" id="data_option">
+            <option value="selectUsersAndTheirPosts">select Users And Their Posts</option>
+        </select>
+        <br>
+        <input type="text" name="option_id" placeholder="Enter ID">
+        <input type="submit" value="Submit">
+        </form>
+</div>
        
-       <?php
-        // Check if the selected option is "insertUser" to display additional fields
-        if ($_SERVER["REQUEST_METHOD"] === "POST" && $_POST["data_option"] === "insertUser") {
-        ?>
-        <label for="name">Name:</label>
-        <input type="text" name="name" id="name" placeholder="Enter Name">
-        <br>
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" placeholder="Enter Email">
-        <br>
-        <input type="submit" value="Submit">
-
-        <?php
-        }
-        ?>
-             <?php
-        // Check if the selected option is "insertUser" to display additional fields
-        if ($_SERVER["REQUEST_METHOD"] === "POST" && $_POST["data_option"] === "updateUser") {
-        ?>
-        <label for="userId">userId:</label>
-        <input type="text" name="userId" id="userId" placeholder="Enter userId">
-        <br>
-        <label for="newName">Name:</label>
-        <input type="text" name="newName" id="newName" placeholder="Enter UpdatedName">
-        <br>
-        <label for="newEmail">Email:</label>
-        <input type="newEmail" name="newEmail" id="newEmail" placeholder="Enter UpdatedEmail">
-        <br>
-        <input type="submit" value="Submit">
-
-        <?php
-        }
-        ?>
 
     <?php
-
+           
 
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         
-        include('../Controllers/controller.php');
-        require_once('../Models/Database.php');
-
-
-        $model = new Database();
-        // Initialize the Controler
-        $controller = new Controller($model);
+      
+        $fetchingUsers = $controller->fetchUsersAndInsertFromApi();
+        $fetchingPosts = $controller->fetchPostsAndInsertFromApi();
+       
 
         $data_option = $_POST["data_option"];
         $option_id = $_POST["option_id"];
 
         $name_option = $_POST["name"];
-        echo "name is: ",$name_option;
    
         $email_option = $_POST["email"];
-        echo "email is: ",$email_option;
+
+        $title_option =$_POST['title'];
+        $body_option =$_POST['body'];
+        $option_userId =$_POST['userId'];
+
 
 
         $updated_name_option = $_POST["newName"];
@@ -156,32 +168,22 @@
 
         } 
         elseif ($data_option === "insertUser") {
-            echo "Am I inside insertedUser?";
             $user = $controller->insertUser($name_option, $email_option);
             echo "try to insert user :($user)";
 
             if ($user) {
                 echo 'Successfully inserted!';
-                echo '<h2>User Details</h2>';
-                echo 'User id: ' . $user['id'] . '<br>';
-                echo 'Name: ' . $user['name'] . '<br>';
-                echo 'Email: ' . $user['email'] . '<br>';
             } else {
                 echo 'User was not inserted.';
             }
 
         } 
         elseif ($data_option === "updateUser") {
-            echo "Am I inside updatedUser?";
             $user = $controller->updateUser($user_id, $updated_name_option, $updated_email_option);
             echo "try to insert user :($user)";
 
             if ($user) {
-                echo 'Successfully inserted!';
-                echo '<h2>User Details</h2>';
-                echo 'User id: ' . $user['id'] . '<br>';
-                echo 'Name: ' . $user['name'] . '<br>';
-                echo 'Email: ' . $user['email'] . '<br>';
+                echo 'Successfully inserted!';            
             } else {
                 echo 'User was not inserted.';
             }
@@ -196,16 +198,38 @@
                 echo 'Name: ' . $user['name'] . '<br>';
                 echo 'Email: ' . $user['email'] . '<br>';
             } 
-        } 
-        }elseif (strpos($data_option, 'Post') !== false) {
-            echo "Am I in Posts?";
-            echo "DataOption is: ($data_option)";
+        }
+        if ($data_option === "selectUsersAndTheirPosts") {          
+            $usersAndPosts =$controller->selectUsersAndTheirPosts();
+            if (!empty($usersAndPosts)) {
+                echo '<h2>All Available Users and Their Posts are: </h2>';
+                echo '<ul>';
+                
+                foreach ($usersAndPosts as $userAndPost) {
+                    echo '<li>';
+                    echo "<br>";
+                    echo 'User ID: ' . $userAndPost['id'] . '<br>';
+                    echo 'Name: ' . $userAndPost['name'] . '<br>';
+                    echo 'Email: ' . $userAndPost['email'] . '<br>';
+                    echo 'DateOfBirth:' . $userAndPost['DateOfBirth'] . '<br>';
+                    echo 'Available:' . $userAndPost['Available'] . '<br>';
+                    echo 'Image: <img src="../../resources/image.jpg">';
+                    echo "<br>";
+                    echo "<h2>Users posts: </h2>";
+                    echo " Title: " . $userAndPost['title'] ."<br>" ;
+                    echo "<p1>Body: " . $userAndPost['body'] . "</p1>" . "<br>";
+                    echo "Available: " . $userAndPost['Available'];
+
+                    echo '</li>';
+                }    
+                echo '</ul>';
+            }
+       }
+    } 
+        elseif (strpos($data_option, 'Post') !== false) {
 
             if ($data_option === "selectAllPosts") {
-                echo "Am I in Posts check 2?";
-                echo "DataOption is: ($data_option)";
                 $posts = $controller->selectPosts();
-                echo "Am I in Posts check 2?";
                 if (!empty($posts)) {
                     echo '<h2>All Existing Posts are </h2>';
                     echo '<ul>';
@@ -227,26 +251,35 @@
                 echo '<h2>Post Details</h2>';
                 echo 'Post id: ' . $post['id'] . '<br>';
                 echo 'Title: ' . $post['title'] . '<br>';
-                echo 'Body: ' . $user['body'] . '<br>';
+                echo 'Body: ' . $post['body'] . '<br>';
             } else {
                 echo 'Post not found.';
             }
 
-        } elseif ($data_option === "deletePostById") {
-            echo "Am I in Posts check 2?";
-                echo "DataOption is: ($data_option)";
-                $post = $controller->deletePost($option_id);
-                echo "Am I in Posts check 2?";
-                echo "DataOption is: ($data_option)";
-                echo " Deleted Post is: ($post)";
-                if ($post) {
-                    echo '<h2>Successfully Deleted.</h2>';
-                    // echo 'Post id: ' . $post['id'] . '<br>';
-                    // echo 'Title: ' . $post['title'] . '<br>';
-                    // echo 'Body: ' . $post['body'] . '<br>';
-                }  else {
-                    echo 'Could not delete.';
-                }
+        }elseif ($data_option === "insertPost") {
+            $insert_post = $controller->insertPost($title_option, $body_option, $option_userId);
+            if ($insert_post) {
+                echo " post successfully inserted!";
+            } else {
+                echo 'Post was not inserted.';
+            }
+
+        }
+        elseif ($data_option === "deletePostById") {
+            $post = $controller->deletePost($option_id);
+                // echo "DataOption is: ($data_option)<br>";
+                // echo 'Deleted Post is:';
+                // echo 'Post id' . $post['id'] .'<br>';
+                // echo 'Title: ' . $post['title'] . '<br>';
+                // echo 'Body: ' . $post['body'] . '<br>';
+                // echo 'Available: ' . $post['Available'] . '<br>';
+                // echo 'UserID: ' . $post['userId'] . '<br>';
+
+            if ($post) {
+                echo '<h2>Successfully Deleted.</h2>';
+            }  else {
+                echo 'Could not delete.';
+            }
         }   
     }
 }
